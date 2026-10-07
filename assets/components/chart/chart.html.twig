@@ -1,0 +1,25 @@
+{#- A chart, drawn by chart.ts with ECharts from the type and the data it is
+    given as options. The words the charts write themselves — a legend, a
+    tooltip — are handed over translated in data-words; the labels of the data
+    come translated with it. -#}
+<div class="chart chart--{{ type }}{% if class|default(null) %} {{ class }}{% endif %}"
+     {%- if height|default(null) %} style="--chart-height: {{ height }}"{% endif %}>
+    <div class="chart--canvas"
+         role="img"
+         aria-label="{{ label|default(null) ?: '@component::label' | trans }}"
+         data-words="{{ {
+             actual: '@component::word.actual' | trans,
+             forecast: '@component::word.forecast' | trans,
+             confidence: '@component::word.confidence' | trans,
+             today: '@component::word.today' | trans,
+             load: '@component::word.load' | trans,
+             capacity: '@component::word.capacity' | trans,
+             count: '@component::word.count' | trans,
+             min: '@component::word.min' | trans,
+             q1: '@component::word.q1' | trans,
+             median: '@component::word.median' | trans,
+             q3: '@component::word.q3' | trans,
+             max: '@component::word.max' | trans,
+         }|json_encode }}"></div>
+    <p class="chart--empty" hidden>{{ '@component::empty' | trans }}</p>
+</div>

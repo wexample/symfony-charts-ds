@@ -1,0 +1,7 @@
+{
+  "name": "@wexample/symfony-charts-ds",
+  "version": "1.0.0",
+  "peerDependencies": {
+    "echarts": "^6.0.0"
+  }
+}

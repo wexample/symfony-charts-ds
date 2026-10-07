@@ -1,11 +1,47 @@
 {
   "name": "wexample/symfony-charts-ds",
+  "description": "Design-system side of symfony-charts: ECharts components and sparklines",
   "version": "1.0.1",
   "type": "library",
   "license": "MIT",
   "autoload": {
     "psr-4": {
       "Wexample\\SymfonyChartsDs\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Wexample\\SymfonyChartsDs\\Tests\\": "tests/"
+    }
+  },
+  "authors": [
+    {
+      "name": "weeger",
+      "email": "romain.weeger@wexample.com"
+    }
+  ],
+  "require": {
+    "php": ">=8.5",
+    "wexample/symfony-charts": ">=1.0.3",
+    "wexample/symfony-design-system": ">=31.0.0",
+    "wexample/symfony-helpers": ">=15.0.0",
+    "wexample/symfony-loader": ">=21.0.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^13"
+  },
+  "repositories": [
+    {
+      "type": "path",
+      "url": "../*",
+      "options": {
+        "symlink": true
+      }
+    }
+  ],
+  "extra": {
+    "install": {
+      "bundle_env": "all"
     }
   }
 }

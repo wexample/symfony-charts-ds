@@ -1,0 +1,29 @@
+// Sized by the box it was drawn for, aligned on the text of the row.
+.chart-sparkline {
+  display: inline-block;
+  vertical-align: middle;
+  overflow: visible;
+}
+
+.chart-sparkline--active {
+  fill: var(--accent-4);
+}
+
+.chart-sparkline--line {
+  fill: none;
+  stroke: var(--accent-9);
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.chart-sparkline--last {
+  fill: var(--accent-9);
+}
+
+// Paper is white whatever the scheme on screen: a light grey window.
+@media print {
+  .chart-sparkline--active {
+    fill: #e8e8e8;
+  }
+}

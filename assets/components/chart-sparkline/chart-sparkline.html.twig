@@ -1,0 +1,22 @@
+{#- A line the size of a word, for a table row: drawn here as svg, so that a
+    long table runs no script. The window to highlight is a band behind the
+    line, the last value a dot at its end. The extent of the values is said to
+    the pointer and to the screen reader alike. -#}
+{%- set extent = geometry.min is not null ? geometry.min|number_format(0, '', ' ') ~ ' – ' ~ geometry.max|number_format(0, '', ' ') : '' -%}
+<svg class="chart-sparkline{% if class|default(null) %} {{ class }}{% endif %}"
+     viewBox="0 0 {{ width }} {{ height }}"
+     width="{{ width }}"
+     height="{{ height }}"
+     role="img"
+     aria-label="{{ (label|default(null) ? label ~ ' : ' : '') ~ extent }}">
+    {%- if label|default(null) or extent -%}<title>{{ (label|default(null) ? label ~ ' : ' : '') ~ extent }}</title>{%- endif -%}
+    {%- if geometry.active -%}
+        <rect class="chart-sparkline--active" x="{{ geometry.active.x }}" y="0" width="{{ geometry.active.width }}" height="{{ height }}"></rect>
+    {%- endif -%}
+    {%- if geometry.points -%}
+        <polyline class="chart-sparkline--line" points="{{ geometry.points }}"></polyline>
+    {%- endif -%}
+    {%- if geometry.last -%}
+        <circle class="chart-sparkline--last" cx="{{ geometry.last.x }}" cy="{{ geometry.last.y }}" r="2"></circle>
+    {%- endif -%}
+</svg>

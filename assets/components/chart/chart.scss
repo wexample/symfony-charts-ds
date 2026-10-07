@@ -1,0 +1,32 @@
+// The chart takes the width it is given and a height of its own, which a page
+// sets through --chart-height. Everything inside the canvas is ECharts' svg,
+// coloured from the roles of the system by chart.ts.
+.chart {
+  --chart-height: 18rem;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.chart--canvas {
+  width: 100%;
+  height: var(--chart-height);
+}
+
+.chart--empty {
+  margin: 0;
+  color: var(--text-color-subtle);
+  font-size: var(--font-size-2);
+}
+
+// On paper a chart is not cut between two pages, and its tooltip, which
+// followed a pointer that is no longer there, is not printed.
+@media print {
+  .chart {
+    break-inside: avoid;
+  }
+
+  .chart--canvas > div:not(:first-child) {
+    display: none !important;
+  }
+}

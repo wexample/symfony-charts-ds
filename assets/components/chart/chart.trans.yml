@@ -1,0 +1,33 @@
+en:
+  label: Chart
+  empty: No data to show.
+  word:
+    actual: Actual
+    forecast: Forecast
+    confidence: Confidence band
+    today: Today
+    load: Load
+    capacity: Capacity
+    count: Count
+    min: Min
+    q1: 1st quartile
+    median: Median
+    q3: 3rd quartile
+    max: Max
+
+fr:
+  label: Graphique
+  empty: Aucune donnée à afficher.
+  word:
+    actual: Réel
+    forecast: Prévision
+    confidence: Intervalle de confiance
+    today: Aujourd'hui
+    load: Charge
+    capacity: Capacité
+    count: Nombre
+    min: Min
+    q1: 1er quartile
+    median: Médiane
+    q3: 3e quartile
+    max: Max

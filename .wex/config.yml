@@ -1,0 +1,7 @@
+domain: symfony-charts-ds.wex
+global:
+  name: symfony-charts-ds
+  type: php-package
+  version: 1.0.0
+wex:
+  version: 6.0.141

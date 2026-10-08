@@ -9,7 +9,7 @@ The data side — `ChartPoint`, its endpoint and providers — is `symfony-chart
 
 ## chart(type, data, options)
 
-```twig
+{% raw %}```twig
 {{ chart('line', {
     categories: months,
     series: [
@@ -17,7 +17,7 @@ The data side — `ChartPoint`, its endpoint and providers — is `symfony-chart
         { name: '@page::series.returns' | trans, values: returns, color: 'mint' },
     ],
 }, { smooth: true }) }}
-```
+```{% endraw %}
 
 The type decides the shape of `data` (`Enum/ChartType`):
 
@@ -48,9 +48,9 @@ Read from the design system where the chart is drawn: the accent for the first s
 
 ## chart_sparkline(values, options)
 
-```twig
+{% raw %}```twig
 {{ chart_sparkline(item.orders, { active: [3, 5], label: 'Orders' }) }}
-```
+```{% endraw %}
 
 `active` is the window to highlight, as the first and last index; `width` and `height` the box, 96 × 24 by default. A null value is a gap. The geometry is `Helper/SparklineHelper::geometry()`, unit tested. In a `data_table`, the cell is `cell: 'html'`.
 

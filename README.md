@@ -1,6 +1,6 @@
 # symfony-charts-ds
 
-Version: 2.0.0
+Version: 2.0.1
 
 ## What this package holds
 
@@ -95,9 +95,9 @@ Visit the [Wexample Suite documentation](https://docs.wexample.com) for the comp
 
 - php: >=8.5
 - wexample/symfony-charts: >=2.0.0
-- wexample/symfony-design-system: >=32.0.0
-- wexample/symfony-helpers: >=15.0.0
-- wexample/symfony-loader: >=22.0.0
+- wexample/symfony-design-system: >=34.0.0
+- wexample/symfony-helpers: >=16.0.0
+- wexample/symfony-loader: >=23.0.0
 
 ## Versioning & Compatibility Policy
 

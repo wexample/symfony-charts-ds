@@ -1,1 +1,1 @@
-{"version":2,"defects":[],"times":{"Wexample\\SymfonyChartsDs\\Tests\\Unit\\SparklineHelperTest::testGeometry":0.003,"Wexample\\SymfonyChartsDs\\Tests\\Unit\\SparklineHelperTest::testGapsAndFlatSeries":0,"Wexample\\SymfonyChartsDs\\Tests\\Unit\\SparklineHelperTest::testEmpty":0}}
+{"version":2,"defects":[],"times":{"Wexample\\SymfonyChartsDs\\Tests\\Unit\\SparklineHelperTest::testGeometry":0.001,"Wexample\\SymfonyChartsDs\\Tests\\Unit\\SparklineHelperTest::testGapsAndFlatSeries":0,"Wexample\\SymfonyChartsDs\\Tests\\Unit\\SparklineHelperTest::testEmpty":0}}

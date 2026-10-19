@@ -65,3 +65,326 @@ ar:
     median: الوسيط
     q3: 'الربع الثالث'
     max: أقصى
+
+hi:
+  label: चार्ट
+  empty: 'दिखाने के लिए कोई डेटा नहीं है।'
+  word:
+    actual: वास्तविक
+    forecast: पूर्वानुमान
+    confidence: 'विश्वसनीयता बैंड'
+    today: आज
+    load: लोड
+    capacity: क्षमता
+    count: गिनती
+    min: न्यूनतम
+    q1: '1रा क्वारटाइल'
+    median: माध्य
+    q3: '3रा क्वारटाइल'
+    max: अधिकतम
+
+he:
+  label: גרף
+  empty: 'אין נתונים להציג.'
+  word:
+    actual: נוכחי
+    forecast: תחזית
+    confidence: 'טווח ביטחון'
+    today: היום
+    load: עמסה
+    capacity: קיבולת
+    count: ספירה
+    min: מינימום
+    q1: 'רבעון ראשון'
+    median: חציון
+    q3: 'רבעון שלישי'
+    max: מקסימום
+
+fa:
+  label: نمودار
+  empty: 'داده‌ای برای نمایش وجود ندارد.'
+  word:
+    actual: واقعی
+    forecast: پیش‌بینی
+    confidence: 'باند اطمینان'
+    today: امروز
+    load: بار
+    capacity: ظرفیت
+    count: تعداد
+    min: حداقل
+    q1: 'نخستین چارک'
+    median: میانه
+    q3: 'سومین چارک'
+    max: حداکثر
+
+ur:
+  label: چارٹ
+  empty: 'دکھانے کے لیے کوئی ڈیٹا نہیں۔'
+  word:
+    actual: حقیقی
+    forecast: 'پیش بینی'
+    confidence: 'اعتماد کا بینڈ'
+    today: آج
+    load: لوڈ
+    capacity: صلاحیت
+    count: شمار
+    min: 'کم از کم'
+    q1: 'پہلا چوتھائی'
+    median: درمیانی
+    q3: 'تیسرا چوتھائی'
+    max: 'زیادہ سے زیادہ'
+
+ja:
+  label: チャート
+  empty: 表示するデータがありません。
+  word:
+    actual: 実績
+    forecast: 予測
+    confidence: 信頼区間
+    today: 今日
+    load: 負荷
+    capacity: 容量
+    count: 件数
+    min: 最小
+    q1: 1四分位数
+    median: 中央値
+    q3: 3四分位数
+    max: 最大
+
+ko:
+  label: 차트
+  empty: '표시할 데이터가 없습니다.'
+  word:
+    actual: 실제
+    forecast: 예상
+    confidence: '신뢰 구간'
+    today: 오늘
+    load: 부하
+    capacity: 용량
+    count: 개수
+    min: 최소
+    q1: 1사분위
+    median: 중앙값
+    q3: 3사분위
+    max: 최대
+
+bn:
+  label: চার্ট
+  empty: 'দেখানোর জন্য কোনো তথ্য নেই।'
+  word:
+    actual: বাস্তব
+    forecast: পূর্বাভাস
+    confidence: 'বিশ্বাসের পরিসর'
+    today: আজ
+    load: লোড
+    capacity: ক্ষমতা
+    count: গণনা
+    min: ন্যূনতম
+    q1: '১ম কোয়ার্টাইল'
+    median: মধ্যম
+    q3: '৩য় কোয়ার্টাইল'
+    max: সর্বাধিক
+
+th:
+  label: แผนภูมิ
+  empty: ไม่มีข้อมูลให้แสดง.
+  word:
+    actual: จริง
+    forecast: คาดการณ์
+    confidence: แถบความเชื่อมั่น
+    today: วันนี้
+    load: โหลด
+    capacity: ความจุ
+    count: จำนวน
+    min: น้อยที่สุด
+    q1: 'ควอไตล์ที่ 1'
+    median: มัธยฐาน
+    q3: 'ควอไตล์ที่ 3'
+    max: มากที่สุด
+
+de:
+  label: Diagramm
+  empty: 'Keine Daten vorhanden.'
+  word:
+    actual: Aktuell
+    forecast: Prognose
+    confidence: Konfidenzband
+    today: Heute
+    load: Laden
+    capacity: Kapazität
+    count: Anzahl
+    min: Min
+    q1: '1. Quartil'
+    median: Median
+    q3: '3. Quartil'
+    max: Max
+
+fi:
+  label: Kaavio
+  empty: 'Ei näyttöön asetettavia tietoja.'
+  word:
+    actual: Todellinen
+    forecast: Ennuste
+    confidence: Luottamusväli
+    today: Tänään
+    load: Kuormitus
+    capacity: Kapasiteetti
+    count: Lukumäärä
+    min: Min
+    q1: '1. kvartiili'
+    median: Mediaani
+    q3: '3. kvartiili'
+    max: Maksimi
+
+ru:
+  label: График
+  empty: 'Нет данных для отображения.'
+  word:
+    actual: Фактическое
+    forecast: Прогноз
+    confidence: 'Доверительный интервал'
+    today: Сегодня
+    load: Загрузка
+    capacity: Вместимость
+    count: Количество
+    min: Мин
+    q1: '1-й квартиль'
+    median: Медиана
+    q3: '3-й квартиль'
+    max: Макс
+
+pl:
+  label: Wykres
+  empty: 'Brak danych do wyświetlenia.'
+  word:
+    actual: Aktualny
+    forecast: Prognoza
+    confidence: 'Pasmo ufności'
+    today: Dziś
+    load: Obciążenie
+    capacity: Pojemność
+    count: Liczba
+    min: Min
+    q1: '1. kwartyl'
+    median: Mediana
+    q3: '3. kwartyl'
+    max: Max
+
+es:
+  label: Gráfico
+  empty: 'No hay datos para mostrar.'
+  word:
+    actual: Actual
+    forecast: Pronóstico
+    confidence: 'Banda de confianza'
+    today: Hoy
+    load: Cargar
+    capacity: Capacidad
+    count: Conteo
+    min: Mín
+    q1: '1er cuartil'
+    median: Mediana
+    q3: '3er cuartil'
+    max: Máx
+
+it:
+  label: Grafico
+  empty: 'Nessun dato da mostrare.'
+  word:
+    actual: Reale
+    forecast: Previsione
+    confidence: 'Intervallo di confidenza'
+    today: Oggi
+    load: Carico
+    capacity: Capacità
+    count: Conteggio
+    min: Min
+    q1: '1° quartile'
+    median: Mediana
+    q3: '3° quartile'
+    max: Max
+
+pt_BR:
+  label: Gráfico
+  empty: 'Nenhum dado para mostrar.'
+  word:
+    actual: Atual
+    forecast: Previsão
+    confidence: 'Banda de confiança'
+    today: Hoje
+    load: Carga
+    capacity: Capacidade
+    count: Contagem
+    min: Mín
+    q1: '1º quartil'
+    median: Mediana
+    q3: '3º quartil'
+    max: Máx
+
+tr:
+  label: Grafik
+  empty: 'Gösterilecek veri yok.'
+  word:
+    actual: Gerçek
+    forecast: Tahmin
+    confidence: 'Güven aralığı'
+    today: Bugün
+    load: Yük
+    capacity: Kapasite
+    count: Sayı
+    min: Min
+    q1: '1. çeyrek'
+    median: Medyan
+    q3: '3. çeyrek'
+    max: Max
+
+vi:
+  label: 'Biểu đồ'
+  empty: 'Không có dữ liệu để hiển thị.'
+  word:
+    actual: 'Thực tế'
+    forecast: 'Dự báo'
+    confidence: 'Băng độ tin cậy'
+    today: 'Hôm nay'
+    load: Tải
+    capacity: 'Dung lượng'
+    count: 'Số lượng'
+    min: 'Tối thiểu'
+    q1: 'Tứ phân vị 1'
+    median: 'Trung vị'
+    q3: 'Tứ phân vị 3'
+    max: 'Tối đa'
+
+id:
+  label: Grafik
+  empty: 'Tidak ada data untuk ditampilkan.'
+  word:
+    actual: Aktual
+    forecast: Perkiraan
+    confidence: 'Rentang keyakinan'
+    today: 'Hari ini'
+    load: Beban
+    capacity: Kapasitas
+    count: Jumlah
+    min: Min
+    q1: 'Kuartil 1'
+    median: Median
+    q3: 'Kuartil 3'
+    max: Max
+
+nl:
+  label: Grafiek
+  empty: 'Geen gegevens om te tonen.'
+  word:
+    actual: Actueel
+    forecast: Voorspelling
+    confidence: Betrouwbaarheidsinterval
+    today: Vandaag
+    load: Lading
+    capacity: Capaciteit
+    count: Aantal
+    min: Min
+    q1: '1e kwartiel'
+    median: Mediaan
+    q3: '3e kwartiel'
+    max: Max

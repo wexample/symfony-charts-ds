@@ -31,3 +31,37 @@ fr:
     median: Médiane
     q3: 3e quartile
     max: Max
+
+zh:
+  label: 图表
+  empty: 没有数据可显示。
+  word:
+    actual: 实际值
+    forecast: 预测值
+    confidence: 置信区间
+    today: 今天
+    load: 负载
+    capacity: 容量
+    count: 计数
+    min: 最小值
+    q1: 第一四分位数
+    median: 中位数
+    q3: 第三四分位数
+    max: 最大值
+
+ar:
+  label: 'رسم بياني'
+  empty: 'لا توجد بيانات لعرضها.'
+  word:
+    actual: فعلي
+    forecast: توقع
+    confidence: 'نطاق الثقة'
+    today: اليوم
+    load: حمولة
+    capacity: سعة
+    count: عدد
+    min: أدنى
+    q1: 'الربع الأول'
+    median: الوسيط
+    q3: 'الربع الثالث'
+    max: أقصى

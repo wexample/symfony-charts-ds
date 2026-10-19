@@ -1,0 +1,118 @@
+{
+    "components/chart/chart.ar.yml": {
+        "empty": {
+            "hash": "7c010c6f319634c26e90efe904198cd0",
+            "engine": "syrtis"
+        },
+        "label": {
+            "hash": "ad56eb0792a31fea1538a928e7eaf8e1",
+            "engine": "syrtis"
+        },
+        "word.actual": {
+            "hash": "252326894ea9ea11f3d60393a4fd6397",
+            "engine": "syrtis"
+        },
+        "word.capacity": {
+            "hash": "ef17e3e74de58c28c4efdb5ccc29c258",
+            "engine": "syrtis"
+        },
+        "word.confidence": {
+            "hash": "22457e1cc743aba2f7f8d484badf35e9",
+            "engine": "syrtis"
+        },
+        "word.count": {
+            "hash": "cc1f639ace6a9c184359507cd2be7c0c",
+            "engine": "syrtis"
+        },
+        "word.forecast": {
+            "hash": "4a42e0bc0fd1f6e5e18d2ae4d4260848",
+            "engine": "syrtis"
+        },
+        "word.load": {
+            "hash": "0537b452b8353298d94dec7eedaae235",
+            "engine": "syrtis"
+        },
+        "word.max": {
+            "hash": "a48d3c74ff32e980a1bbbcf5e7ceecfe",
+            "engine": "syrtis"
+        },
+        "word.median": {
+            "hash": "192e27af2a4f3c4cd556fe245e125be1",
+            "engine": "syrtis"
+        },
+        "word.min": {
+            "hash": "9237f5d7689e4ff6da8e453427de3f6f",
+            "engine": "syrtis"
+        },
+        "word.q1": {
+            "hash": "f0e66714c3a794798c3036ccde8cc003",
+            "engine": "syrtis"
+        },
+        "word.q3": {
+            "hash": "6acac78479067d4c77752a45ecfea5f1",
+            "engine": "syrtis"
+        },
+        "word.today": {
+            "hash": "b302b053e38d44e2ef5b3051186e5b70",
+            "engine": "syrtis"
+        }
+    },
+    "components/chart/chart.zh.yml": {
+        "empty": {
+            "hash": "7c010c6f319634c26e90efe904198cd0",
+            "engine": "syrtis"
+        },
+        "label": {
+            "hash": "ad56eb0792a31fea1538a928e7eaf8e1",
+            "engine": "syrtis"
+        },
+        "word.actual": {
+            "hash": "252326894ea9ea11f3d60393a4fd6397",
+            "engine": "syrtis"
+        },
+        "word.capacity": {
+            "hash": "ef17e3e74de58c28c4efdb5ccc29c258",
+            "engine": "syrtis"
+        },
+        "word.confidence": {
+            "hash": "22457e1cc743aba2f7f8d484badf35e9",
+            "engine": "syrtis"
+        },
+        "word.count": {
+            "hash": "cc1f639ace6a9c184359507cd2be7c0c",
+            "engine": "syrtis"
+        },
+        "word.forecast": {
+            "hash": "4a42e0bc0fd1f6e5e18d2ae4d4260848",
+            "engine": "syrtis"
+        },
+        "word.load": {
+            "hash": "0537b452b8353298d94dec7eedaae235",
+            "engine": "syrtis"
+        },
+        "word.max": {
+            "hash": "a48d3c74ff32e980a1bbbcf5e7ceecfe",
+            "engine": "syrtis"
+        },
+        "word.median": {
+            "hash": "192e27af2a4f3c4cd556fe245e125be1",
+            "engine": "syrtis"
+        },
+        "word.min": {
+            "hash": "9237f5d7689e4ff6da8e453427de3f6f",
+            "engine": "syrtis"
+        },
+        "word.q1": {
+            "hash": "f0e66714c3a794798c3036ccde8cc003",
+            "engine": "syrtis"
+        },
+        "word.q3": {
+            "hash": "6acac78479067d4c77752a45ecfea5f1",
+            "engine": "syrtis"
+        },
+        "word.today": {
+            "hash": "b302b053e38d44e2ef5b3051186e5b70",
+            "engine": "syrtis"
+        }
+    }
+}

@@ -1,6 +1,6 @@
 # symfony-charts-ds
 
-Version: 2.0.5
+Version: 3.0.0
 
 ## What this package holds
 
@@ -66,6 +66,14 @@ Svg, a chart is not cut between two pages, its tooltip is not printed.
 
 Chrome's `--screenshot` mode never fires the `IntersectionObserver`: a lazy chart stays empty. Drive the page through the DevTools protocol and scroll it before capturing.
 
+## A world map
+
+`chart('map', { categories, series }, options)` colours the countries by the first series, from the ground of the page to the accent: the categories are ISO 3166-1 alpha-2 codes, named in the page's language under the pointer. The shapes are Natural Earth's (public domain, `assets/components/chart/map/world.json`), loaded in a chunk of their own by the first map of a page.
+
+## Following the period-nav
+
+`period: true`, with a `source`, sends the period the design system's period-nav announces (`period-change`) as `from` and `to`, and reads the points again at each change. The chart asks the period-nav for its period once listening (`period-request`), whichever of the two is ready first.
+
 ## Table of Contents
 
 - [What this package holds](#what-this-package-holds)
@@ -74,6 +82,8 @@ Chrome's `--screenshot` mode never fires the `IntersectionObserver`: a lazy char
 - [chart_sparkline(values, options)](#chartsparklinevalues-options)
 - [Print](#print)
 - [Taking a screenshot of a page of charts](#taking-a-screenshot-of-a-page-of-charts)
+- [A world map](#a-world-map)
+- [Following the period-nav](#following-the-period-nav)
 - [Integration in the Suite](#integration-in-the-suite)
 - [Dependencies](#dependencies)
 - [Versioning & Compatibility Policy](#versioning--compatibility-policy)
@@ -92,10 +102,10 @@ The suite includes packages for configuration management, file handling, prompts
 ## Dependencies
 
 - php: >=8.5
-- wexample/symfony-charts: >=2.1.0
-- wexample/symfony-design-system: >=37.0.0
+- wexample/symfony-charts: >=3.0.0
+- wexample/symfony-design-system: >=38.0.0
 - wexample/symfony-helpers: >=17.0.0
-- wexample/symfony-loader: >=23.2.0
+- wexample/symfony-loader: >=23.3.0
 
 ## Versioning & Compatibility Policy
 

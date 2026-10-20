@@ -11,6 +11,8 @@ namespace Wexample\SymfonyChartsDs\Enum;
  * - forecast: { categories, actual, forecast, low?, high?, today? }
  * - boxplot: { categories, series: [{ name, values: [[samples], ...] }] }
  * - histogram: { samples, bins? }
+ * - map: { categories: ISO 3166 alpha-2 codes, series: [{ name, values }] },
+ *   countries coloured by the first series
  */
 enum ChartType: string
 {
@@ -22,4 +24,5 @@ enum ChartType: string
     case FORECAST = 'forecast';
     case BOXPLOT = 'boxplot';
     case HISTOGRAM = 'histogram';
+    case MAP = 'map';
 }

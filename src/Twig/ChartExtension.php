@@ -10,7 +10,7 @@ use Wexample\SymfonyChartsDs\Helper\SparklineHelper;
 use Wexample\SymfonyDesignSystem\Twig\AbstractTemplateExtension;
 
 /**
- * - `chart(type, data, { height, format, stacked, horizontal, smooth, legend, thresholds, source, lazy })`:
+ * - `chart(type, data, { height, format, stacked, horizontal, smooth, legend, thresholds, source, period, lazy })`:
  *   a chart drawn by ECharts, data shaped as ChartType says. With `source`,
  *   the points of that chart are read from the api instead, as ChartPoint
  *   entities (symfony-charts).
@@ -56,6 +56,8 @@ class ChartExtension extends AbstractTemplateExtension
                             // The name of a chart served as ChartPoint entities, read
                             // instead of `data`.
                             'source' => $options['source'] ?? null,
+                            // With `source`: its points follow the period-nav of the page.
+                            'period' => (bool) ($options['period'] ?? false),
                             // { style: decimal|percent|currency|unit, currency, unit, decimals }
                             'format' => $options['format'] ?? null,
                             'stacked' => (bool) ($options['stacked'] ?? false),

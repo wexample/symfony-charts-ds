@@ -2,12 +2,13 @@ import Component from '@wexample/symfony-loader/js/Class/Component';
 import LazyActivationMixin from '@wexample/symfony-loader/js/Class/Mixins/LazyActivationMixin';
 import { AssetsServiceEvents } from '@wexample/symfony-loader/js/Services/AssetsService';
 import * as echarts from 'echarts/core';
-import { BarChart, BoxplotChart, LineChart, PieChart, ScatterChart } from 'echarts/charts';
+import { BarChart, BoxplotChart, LineChart, MapChart, PieChart, ScatterChart } from 'echarts/charts';
 import {
   GridComponent,
   LegendComponent,
   MarkLineComponent,
   TooltipComponent,
+  VisualMapComponent,
 } from 'echarts/components';
 import { SVGRenderer } from 'echarts/renderers';
 import type { ECharts, EChartsCoreOption } from 'echarts/core';
@@ -18,14 +19,33 @@ echarts.use([
   BarChart,
   BoxplotChart,
   LineChart,
+  MapChart,
   PieChart,
   ScatterChart,
   GridComponent,
   LegendComponent,
   MarkLineComponent,
   TooltipComponent,
+  VisualMapComponent,
   SVGRenderer,
 ]);
+
+// The countries of the map type, registered once whichever chart asks first.
+const WORLD_MAP = 'world';
+let worldMapLoading: Promise<void> | null = null;
+
+function worldMapLoad(): Promise<void> {
+  // A chunk of its own: only a page drawing a map carries the shapes.
+  worldMapLoading ??= import('./map/world.json').then((module: any) => {
+    echarts.registerMap(WORLD_MAP, module.default ?? module);
+  });
+
+  return worldMapLoading;
+}
+
+// The period a period-nav announces (`period-change`, with ISO bounds), to
+// which a chart reading its points from the api restricts them.
+type ChartPeriod = { from: string; to: string };
 
 type ChartSeries = {
   name: string;
@@ -60,10 +80,13 @@ type ChartFormat = {
 
 type ChartOptions = {
   lazy: boolean;
-  type: 'line' | 'area' | 'bar' | 'donut' | 'capacity' | 'forecast' | 'boxplot' | 'histogram';
+  type: 'line' | 'area' | 'bar' | 'donut' | 'capacity' | 'forecast' | 'boxplot' | 'histogram' | 'map';
   data: ChartData;
   // The name of a chart served as ChartPoint entities (symfony-charts).
   source: string | null;
+  // Whether its points follow the period-nav of the page: `from` and `to`
+  // sent with the query, read again on each change.
+  period: boolean;
   format: ChartFormat | null;
   stacked: boolean;
   horizontal: boolean;
@@ -110,6 +133,7 @@ export default class extends Component {
   private loading = false;
   // Paper is white whatever the scheme on screen: drawn in ink while printing.
   private printing = false;
+  private period: ChartPeriod | null = null;
 
   // A chart is a library to start: it waits to be seen (`lazy: false` on a
   // call to draw it at once, at the top of a page).
@@ -137,18 +161,48 @@ export default class extends Component {
     // A colour scheme, a palette or a skin switched: drawn again in its colours.
     this.app.services.events.listen(AssetsServiceEvents.USAGE_CHANGE, this.onUsageChange);
 
+    // Not awaited: a slow answer would hold the activation of the component
+    // and, through it, whatever the page activates after.
+    void this.start();
+  }
+
+  private async start(): Promise<void> {
+    if (this.options.type === 'map') {
+      await worldMapLoad();
+    }
+
+    if (this.options.source && this.options.period) {
+      // The period-nav announced its period before this chart listened, or
+      // will: it is asked to say it again, and every change after is heard.
+      document.addEventListener('period-change', this.onPeriodChange);
+      document.dispatchEvent(new CustomEvent('period-request'));
+
+      return;
+    }
+
     if (this.options.source) {
-      // Not awaited: a slow answer would hold the activation of the component
-      // and, through it, whatever the page activates after.
-      void this.fetchData(this.options.source).then(() => this.draw());
+      await this.fetchData(this.options.source);
     } else {
       this.data = this.options.data ?? {};
-      this.draw();
     }
+
+    this.draw();
   }
+
+  private onPeriodChange = (event: Event): void => {
+    const { from, to } = (event as CustomEvent<ChartPeriod>).detail;
+
+    if (this.period?.from === from && this.period?.to === to) {
+      return;
+    }
+
+    this.period = { from, to };
+    void this.fetchData(this.options.source!).then(() => this.draw());
+  };
 
   protected async deactivateListeners(): Promise<void> {
     this.resizeObserver?.disconnect();
+    document.removeEventListener('period-change', this.onPeriodChange);
     this.app.services.events.forget(AssetsServiceEvents.USAGE_CHANGE, this.onUsageChange);
     window.removeEventListener('beforeprint', this.onPrint);
     window.removeEventListener('afterprint', this.onPrintEnd);
@@ -182,7 +236,7 @@ export default class extends Component {
       const repository = (this.app.getService('api') as any).client.getRepository('chartPoint');
       // No locale in the query: symfony-translations answers an api call in
       // the language of the page it comes from.
-      const points = await repository.fetchList({ query: { chart: source } });
+      const points = await repository.fetchList({ query: { chart: source, ...(this.period ?? {}) } });
       this.data = this.pivot(points);
     } catch {
       this.data = {};
@@ -257,6 +311,8 @@ export default class extends Component {
         return this.boxplot(theme);
       case 'histogram':
         return this.histogram(theme);
+      case 'map':
+        return this.map(theme);
       default:
         return this.cartesian(theme);
     }
@@ -321,6 +377,53 @@ export default class extends Component {
         label: { show: false },
         itemStyle: { borderColor: theme.surface, borderWidth: 2 },
         data: categories.map((name, index) => ({ name, value: values[index] })),
+      }],
+    };
+  }
+
+  // Countries coloured by their value, from the ground of the page to the
+  // accent: the categories are ISO 3166 alpha-2 codes, named in the language
+  // of the page where the pointer stops.
+  private map(theme: ChartTheme): EChartsCoreOption | null {
+    const values = (this.data.series?.[0]?.values ?? []) as (number | null)[];
+    const categories = this.data.categories ?? [];
+
+    if (!values.length) {
+      return null;
+    }
+
+    const full = this.formatter(false);
+    const names = new Intl.DisplayNames(this.locale() ? [this.locale()!.replace('_', '-')] : [], { type: 'region' });
+    const name = (code: string) => {
+      try {
+        return names.of(code) ?? code;
+      } catch {
+        return code;
+      }
+    };
+
+    return {
+      ...this.base(theme, false),
+      tooltip: {
+        ...this.tooltip(theme),
+        trigger: 'item',
+        formatter: (params: any) => `${name(params.name)}<br><strong>${full(Number.isNaN(params.value) ? null : params.value)}</strong>`,
+      },
+      visualMap: {
+        type: 'continuous',
+        min: 0,
+        max: Math.max(1, ...values.map((value) => value ?? 0)),
+        show: false,
+        inRange: { color: [theme.line, theme.accent] },
+      },
+      series: [{
+        type: 'map',
+        map: WORLD_MAP,
+        roam: false,
+        selectedMode: false,
+        itemStyle: { areaColor: theme.surface, borderColor: theme.axis, borderWidth: 0.5 },
+        emphasis: { label: { show: false }, itemStyle: { areaColor: theme.strong } },
+        data: categories.map((code, index) => ({ name: code, value: values[index] })),
       }],
     };
   }

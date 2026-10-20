@@ -61,3 +61,11 @@ Svg, a chart is not cut between two pages, its tooltip is not printed.
 ## Taking a screenshot of a page of charts
 
 Chrome's `--screenshot` mode never fires the `IntersectionObserver`: a lazy chart stays empty. Drive the page through the DevTools protocol and scroll it before capturing.
+
+## A world map
+
+`chart('map', { categories, series }, options)` colours the countries by the first series, from the ground of the page to the accent: the categories are ISO 3166-1 alpha-2 codes, named in the page's language under the pointer. The shapes are Natural Earth's (public domain, `assets/components/chart/map/world.json`), loaded in a chunk of their own by the first map of a page.
+
+## Following the period-nav
+
+`period: true`, with a `source`, sends the period the design system's period-nav announces (`period-change`) as `from` and `to`, and reads the points again at each change. The chart asks the period-nav for its period once listening (`period-request`), whichever of the two is ready first.

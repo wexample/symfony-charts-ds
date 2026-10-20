@@ -381,8 +381,7 @@ export default class extends Component {
     };
   }
 
-  // Countries coloured by their value, from the ground of the page to the
-  // accent: the categories are ISO 3166 alpha-2 codes, named in the language
+  // Countries coloured by their value, in the accent: the categories are ISO 3166 alpha-2 codes, named in the language
   // of the page where the pointer stops.
   private map(theme: ChartTheme): EChartsCoreOption | null {
     const values = (this.data.series?.[0]?.values ?? []) as (number | null)[];
@@ -414,14 +413,17 @@ export default class extends Component {
         min: 0,
         max: Math.max(1, ...values.map((value) => value ?? 0)),
         show: false,
-        inRange: { color: [theme.line, theme.accent] },
+        // The accent, fainter for the fewest: a country with none keeps the
+        // ground's line colour, and one with a few is told apart from it.
+        inRange: { color: [theme.accent], colorAlpha: [0.35, 1] },
       },
       series: [{
         type: 'map',
         map: WORLD_MAP,
         roam: false,
         selectedMode: false,
-        itemStyle: { areaColor: theme.surface, borderColor: theme.axis, borderWidth: 0.5 },
+        showLegendSymbol: false,
+        itemStyle: { areaColor: theme.line, borderColor: theme.surface, borderWidth: 0.5 },
         emphasis: { label: { show: false }, itemStyle: { areaColor: theme.strong } },
         data: categories.map((code, index) => ({ name: code, value: values[index] })),
       }],

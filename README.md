@@ -1,6 +1,6 @@
 # symfony-charts-ds
 
-Version: 3.0.1
+Version: 3.0.2
 
 ## What this package holds
 
@@ -105,7 +105,7 @@ The suite includes packages for configuration management, file handling, prompts
 - wexample/symfony-charts: >=3.0.0
 - wexample/symfony-design-system: >=39.0.0
 - wexample/symfony-helpers: >=18.0.0
-- wexample/symfony-loader: >=24.0.0
+- wexample/symfony-loader: >=25.0.0
 
 ## Versioning & Compatibility Policy
 

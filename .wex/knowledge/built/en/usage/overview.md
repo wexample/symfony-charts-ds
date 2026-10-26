@@ -66,6 +66,10 @@ Chrome's `--screenshot` mode never fires the `IntersectionObserver`: a lazy char
 
 `chart('map', { categories, series }, options)` colours the countries by the first series, from the ground of the page to the accent: the categories are ISO 3166-1 alpha-2 codes, named in the page's language under the pointer. The shapes are Natural Earth's (public domain, `assets/components/chart/map/world.json`), loaded in a chunk of their own by the first map of a page.
 
+## A calendar
+
+`chart('calendar', { categories, series }, options)` draws a value a day as a contribution calendar does: a cell a day, a column a week from Monday, the months named in the page's language. The categories are the days, written `YYYY-MM-DD` and in order, the first and the last bounding the calendar; a day at zero keeps the ground's line colour, the others take the accent, fainter for the fewest. Seven rows hold in a short chart: `height: '9rem'` for a year across a column of text.
+
 ## Following the period-nav
 
 `period: true`, with a `source`, sends the period the design system's period-nav announces (`period-change`) as `from` and `to`, and reads the points again at each change. The chart asks the period-nav for its period once listening (`period-request`), whichever of the two is ready first.

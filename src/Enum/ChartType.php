@@ -13,6 +13,8 @@ namespace Wexample\SymfonyChartsDs\Enum;
  * - histogram: { samples, bins? }
  * - map: { categories: ISO 3166 alpha-2 codes, series: [{ name, values }] },
  *   countries coloured by the first series
+ * - calendar: { categories: days written YYYY-MM-DD, in order, series: [{ name,
+ *   values }] }, a cell a day coloured by the first series, a column a week
  */
 enum ChartType: string
 {
@@ -25,4 +27,5 @@ enum ChartType: string
     case BOXPLOT = 'boxplot';
     case HISTOGRAM = 'histogram';
     case MAP = 'map';
+    case CALENDAR = 'calendar';
 }

@@ -2,9 +2,8 @@ import Component from '@wexample/symfony-loader/js/Class/Component';
 import LazyActivationMixin from '@wexample/symfony-loader/js/Class/Mixins/LazyActivationMixin';
 import { AssetsServiceEvents } from '@wexample/symfony-loader/js/Services/AssetsService';
 import * as echarts from 'echarts/core';
-import { BarChart, BoxplotChart, HeatmapChart, LineChart, MapChart, PieChart, ScatterChart } from 'echarts/charts';
+import { BarChart, BoxplotChart, LineChart, MapChart, PieChart, ScatterChart } from 'echarts/charts';
 import {
-  CalendarComponent,
   GridComponent,
   LegendComponent,
   MarkLineComponent,
@@ -19,12 +18,10 @@ import type { ECharts, EChartsCoreOption } from 'echarts/core';
 echarts.use([
   BarChart,
   BoxplotChart,
-  HeatmapChart,
   LineChart,
   MapChart,
   PieChart,
   ScatterChart,
-  CalendarComponent,
   GridComponent,
   LegendComponent,
   MarkLineComponent,
@@ -83,7 +80,7 @@ type ChartFormat = {
 
 type ChartOptions = {
   lazy: boolean;
-  type: 'line' | 'area' | 'bar' | 'donut' | 'capacity' | 'forecast' | 'boxplot' | 'histogram' | 'map' | 'calendar';
+  type: 'line' | 'area' | 'bar' | 'donut' | 'capacity' | 'forecast' | 'boxplot' | 'histogram' | 'map';
   data: ChartData;
   // The name of a chart served as ChartPoint entities (symfony-charts).
   source: string | null;
@@ -316,8 +313,6 @@ export default class extends Component {
         return this.histogram(theme);
       case 'map':
         return this.map(theme);
-      case 'calendar':
-        return this.calendar(theme);
       default:
         return this.cartesian(theme);
     }
@@ -431,60 +426,6 @@ export default class extends Component {
         itemStyle: { areaColor: theme.line, borderColor: theme.surface, borderWidth: 0.5 },
         emphasis: { label: { show: false }, itemStyle: { areaColor: theme.strong } },
         data: categories.map((code, index) => ({ name: code, value: values[index] })),
-      }],
-    };
-  }
-
-  // A value a day, a column a week from Monday, as a contribution calendar
-  // reads: the days without any keep the ground's line colour, the others the
-  // accent, fainter for the fewest.
-  private calendar(theme: ChartTheme): EChartsCoreOption | null {
-    const values = (this.data.series?.[0]?.values ?? []) as (number | null)[];
-    const days = this.data.categories ?? [];
-
-    if (!days.length) {
-      return null;
-    }
-
-    const locale = this.locale()?.replace('_', '-');
-    const full = this.formatter(false);
-    const months = Array.from({ length: 12 }, (_, month) =>
-      new Intl.DateTimeFormat(locale, { month: 'short', timeZone: 'UTC' }).format(Date.UTC(2000, month, 1))
-    );
-    const dayName = new Intl.DateTimeFormat(locale, { dateStyle: 'full', timeZone: 'UTC' });
-
-    return {
-      ...this.base(theme, false),
-      tooltip: {
-        ...this.tooltip(theme),
-        trigger: 'item',
-        formatter: (params: any) => `${dayName.format(new Date(`${params.value[0]}T00:00:00Z`))}<br><strong>${full(params.value[1])}</strong>`,
-      },
-      visualMap: {
-        type: 'continuous',
-        min: 1,
-        max: Math.max(1, ...values.map((value) => value ?? 0)),
-        show: false,
-        inRange: { color: [theme.accent], colorAlpha: [0.3, 1] },
-        outOfRange: { color: [theme.line] },
-      },
-      calendar: {
-        range: [days[0], days[days.length - 1]],
-        top: 24,
-        left: 8,
-        right: 8,
-        bottom: 8,
-        cellSize: ['auto', 'auto'],
-        splitLine: { show: false },
-        itemStyle: { color: theme.line, borderColor: theme.surface, borderWidth: 2 },
-        dayLabel: { show: false, firstDay: 1 },
-        monthLabel: { nameMap: months, color: theme.text, fontFamily: theme.font },
-        yearLabel: { show: false },
-      },
-      series: [{
-        type: 'heatmap',
-        coordinateSystem: 'calendar',
-        data: days.map((day, index) => [day, values[index] ?? 0]),
       }],
     };
   }

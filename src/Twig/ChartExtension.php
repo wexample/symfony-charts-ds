@@ -14,8 +14,9 @@ use Wexample\SymfonyDesignSystem\Twig\AbstractTemplateExtension;
  *   a chart drawn by ECharts, data shaped as ChartType says. With `source`,
  *   the points of that chart are read from the api instead, as ChartPoint
  *   entities (symfony-charts).
- * - `chart_sparkline(values, { active: [from, to], width, height, label })`:
- *   a small line drawn on the server, for a table row.
+ * - `chart_sparkline(values, { active: [from, to], width, height, label, fluid })`:
+ *   a small line drawn on the server, for a table row; `fluid`, as wide as
+ *   what holds it — the foot of a key figure's card —, `height` its own.
  */
 class ChartExtension extends AbstractTemplateExtension
 {
@@ -82,7 +83,10 @@ class ChartExtension extends AbstractTemplateExtension
                     array $values,
                     array $options = []
                 ): string {
-                    $width = (float) ($options['width'] ?? self::SPARKLINE_WIDTH);
+                    // Fluid, the line is drawn in a box of a hundred units the
+                    // svg stretches to its width: the dot is placed over it in
+                    // percent, so it stays round.
+                    $width = ($options['fluid'] ?? false) ? 100.0 : (float) ($options['width'] ?? self::SPARKLINE_WIDTH);
                     $height = (float) ($options['height'] ?? self::SPARKLINE_HEIGHT);
 
                     return $this->renderComponent(
@@ -94,6 +98,7 @@ class ChartExtension extends AbstractTemplateExtension
                             'height' => $height,
                             'label' => $options['label'] ?? null,
                             'class' => $options['class'] ?? null,
+                            'fluid' => (bool) ($options['fluid'] ?? false),
                             'geometry' => SparklineHelper::geometry($values, $width, $height, $options['active'] ?? null),
                         ]
                     );

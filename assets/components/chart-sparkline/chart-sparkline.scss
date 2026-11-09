@@ -21,6 +21,36 @@
   fill: var(--accent-9);
 }
 
+// As wide as what holds it, under a key figure: the line quiet — the figure
+// above says the number —, the last value a dot of the accent at its end.
+.chart-sparkline--fluid {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: var(--chart-sparkline-height);
+
+  > svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+
+  .chart-sparkline--line {
+    stroke: var(--text-color-subtle);
+    stroke-width: 2;
+  }
+}
+
+.chart-sparkline--dot {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent-9);
+  transform: translate(-50%, -50%);
+}
+
 // Paper is white whatever the scheme on screen: a light grey window.
 @media print {
   .chart-sparkline--active {

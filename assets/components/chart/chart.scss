@@ -13,10 +13,38 @@
   height: var(--chart-height);
 }
 
+// Nothing to draw: a placeholder the chart's height, its frame dashed as a
+// block standing for what is not there yet (block--placeholder), a faint
+// chart and the words in its middle — the page keeps its shape, and nothing
+// having happened is not an error.
 .chart--empty {
-  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  height: var(--chart-height);
+  padding: var(--space-4);
+  border: var(--border-placeholder);
+  border-radius: var(--radius-box);
+  background: var(--surface-page);
   color: var(--text-color-subtle);
   font-size: var(--font-size-2);
+  text-align: center;
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.chart--empty-icon {
+  display: inline-flex;
+  opacity: 0.6;
+
+  svg {
+    width: 2rem;
+    height: 2rem;
+  }
 }
 
 // On paper a chart is not cut between two pages, and its tooltip, which

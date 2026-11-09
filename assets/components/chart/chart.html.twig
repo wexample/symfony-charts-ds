@@ -21,5 +21,10 @@
              q3: '@component::word.q3' | trans,
              max: '@component::word.max' | trans,
          }|json_encode }}"></div>
-    <p class="chart--empty" hidden>{{ '@component::empty' | trans }}</p>
+    {#- Nothing to draw: the room the chart would have taken, held by a
+        placeholder saying so, so the page does not jump when data comes. -#}
+    <div class="chart--empty" hidden>
+        <span class="chart--empty-icon" aria-hidden="true">{{ icon('ph:bold/chart-line') }}</span>
+        <span class="chart--empty-text">{{ '@component::empty' | trans }}</span>
+    </div>
 </div>

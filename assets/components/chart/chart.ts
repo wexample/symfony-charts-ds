@@ -87,6 +87,9 @@ type ChartOptions = {
   // Whether its points follow the period-nav of the page: `from` and `to`
   // sent with the query, read again on each change.
   period: boolean;
+  // What the chart is about — a project, an account, by its id —, sent with
+  // the query for the provider to read and check.
+  scope: string | null;
   format: ChartFormat | null;
   stacked: boolean;
   horizontal: boolean;
@@ -236,7 +239,9 @@ export default class extends Component {
       const repository = (this.app.getService('api') as any).client.getRepository('chartPoint');
       // No locale in the query: symfony-translations answers an api call in
       // the language of the page it comes from.
-      const points = await repository.fetchList({ query: { chart: source, ...(this.period ?? {}) } });
+      const points = await repository.fetchList({
+        query: { chart: source, ...(this.options.scope ? { scope: this.options.scope } : {}), ...(this.period ?? {}) },
+      });
       this.data = this.pivot(points);
     } catch {
       this.data = {};

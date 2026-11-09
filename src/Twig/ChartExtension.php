@@ -58,6 +58,8 @@ class ChartExtension extends AbstractTemplateExtension
                             'source' => $options['source'] ?? null,
                             // With `source`: its points follow the period-nav of the page.
                             'period' => (bool) ($options['period'] ?? false),
+                            // With `source`: what the chart is about, by its id, for the provider.
+                            'scope' => isset($options['scope']) ? (string) $options['scope'] : null,
                             // { style: decimal|percent|currency|unit, currency, unit, decimals }
                             'format' => $options['format'] ?? null,
                             'stacked' => (bool) ($options['stacked'] ?? false),

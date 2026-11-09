@@ -1,7 +1,7 @@
 {
   "name": "wexample/symfony-charts-ds",
   "description": "Design-system side of symfony-charts: ECharts components and sparklines",
-  "version": "5.0.8",
+  "version": "5.1.0",
   "type": "library",
   "license": "MIT",
   "autoload": {
@@ -22,8 +22,8 @@
   ],
   "require": {
     "php": ">=8.5",
-    "wexample/symfony-charts": ">=4.0.0",
-    "wexample/symfony-design-system": ">=42.0.0",
+    "wexample/symfony-charts": ">=4.1.0",
+    "wexample/symfony-design-system": ">=43.0.0",
     "wexample/symfony-helpers": ">=19.1.0",
     "wexample/symfony-loader": ">=27.0.0"
   },

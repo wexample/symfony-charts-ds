@@ -39,12 +39,8 @@
 
 .chart--empty-icon {
   display: inline-flex;
+  font-size: 2rem;
   opacity: 0.6;
-
-  svg {
-    width: 2rem;
-    height: 2rem;
-  }
 }
 
 // On paper a chart is not cut between two pages, and its tooltip, which

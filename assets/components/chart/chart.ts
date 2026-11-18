@@ -135,6 +135,7 @@ export default class extends Component {
   private data: ChartData = {};
   private words = {} as ChartWords;
   private resizeObserver?: ResizeObserver;
+  private resizeFrame = 0;
   // While the data is on its way, there is nothing to say "empty" about yet.
   private loading = false;
   // Paper is white whatever the scheme on screen: drawn in ink while printing.
@@ -160,7 +161,14 @@ export default class extends Component {
     this.words = JSON.parse(canvas.dataset.words || '{}');
     this.chart = echarts.init(canvas, null, { renderer: 'svg' });
 
-    this.resizeObserver = new ResizeObserver(() => this.chart?.resize());
+    // Resized on the next frame rather than in the observer's callback: the
+    // svg redrawn there changes the layout being observed, which the browser
+    // reports as an error (ResizeObserver loop completed with undelivered
+    // notifications). One resize per frame however many notifications.
+    this.resizeObserver = new ResizeObserver(() => {
+      cancelAnimationFrame(this.resizeFrame);
+      this.resizeFrame = requestAnimationFrame(() => this.chart?.resize());
+    });
     this.resizeObserver.observe(canvas);
     window.addEventListener('beforeprint', this.onPrint);
     window.addEventListener('afterprint', this.onPrintEnd);
@@ -236,6 +244,7 @@ export default class extends Component {
   protected async deactivateListeners(): Promise<void> {
     (this.app.services[PollingService.serviceName] as PollingService | undefined)?.stopOwner(this);
     this.resizeObserver?.disconnect();
+    cancelAnimationFrame(this.resizeFrame);
     document.removeEventListener('period-change', this.onPeriodChange);
     this.app.services.events.forget(AssetsServiceEvents.USAGE_CHANGE, this.onUsageChange);
     window.removeEventListener('beforeprint', this.onPrint);

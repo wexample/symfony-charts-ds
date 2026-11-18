@@ -34,6 +34,7 @@ Options:
 
 - `source`: the name of a chart served as `ChartPoint` entities; read through the generated repository instead of `data`. The points are turned into the shape above: the categories by `position`, a series per key, and each series again under its own key — `load`, `actual` — for the types that read one by name.
 - `scope`: with `source`, what the chart is about — a project, an account, by its id —, sent to the provider, which checks it.
+- `poll`: with `source`, its points read again every so many seconds — a chart of what goes on now — through the loader's `PollingService` (not while the page is hidden, at once when seen again, further apart while the source fails), without a spinner over the points already drawn. Chosen by the page, never a fallback of live updates.
 - `format`: `{ style: decimal|percent|currency|unit, currency, unit, decimals }`, `Intl.NumberFormat` in the page's language. Axes write compact numbers (`25 k €`), tooltips whole ones.
 - `stacked`, `horizontal` (bar), `smooth` (line, area).
 - `legend`: shown when there is more than one series unless said.

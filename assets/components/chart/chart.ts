@@ -1,6 +1,7 @@
 import Component from '@wexample/symfony-loader/js/Class/Component';
 import LazyActivationMixin from '@wexample/symfony-loader/js/Class/Mixins/LazyActivationMixin';
 import { AssetsServiceEvents } from '@wexample/symfony-loader/js/Services/AssetsService';
+import PollingService from '@wexample/symfony-loader/js/Services/PollingService';
 import * as echarts from 'echarts/core';
 import { BarChart, BoxplotChart, LineChart, MapChart, PieChart, ScatterChart } from 'echarts/charts';
 import {
@@ -90,6 +91,8 @@ type ChartOptions = {
   // What the chart is about — a project, an account, by its id —, sent with
   // the query for the provider to read and check.
   scope: string | null;
+  // With `source`: seconds between two readings of its points, or null.
+  poll: number | null;
   format: ChartFormat | null;
   stacked: boolean;
   horizontal: boolean;
@@ -179,6 +182,7 @@ export default class extends Component {
       // will: it is asked to say it again, and every change after is heard.
       document.addEventListener('period-change', this.onPeriodChange);
       document.dispatchEvent(new CustomEvent('period-request'));
+      this.startPolling();
 
       return;
     }
@@ -190,6 +194,32 @@ export default class extends Component {
     }
 
     this.draw();
+    this.startPolling();
+  }
+
+  // Its points read again on a clock (`poll`), through the page's
+  // PollingService: not while nobody looks, at once when they look again,
+  // further apart while the source fails; stopped with the chart.
+  private startPolling(): void {
+    const source = this.options.source;
+
+    if (!source || !this.options.poll) {
+      return;
+    }
+
+    (this.app.getServiceOrFail(PollingService) as PollingService).start({
+      owner: this,
+      intervalMs: this.options.poll * 1000,
+      read: async () => {
+        // Following the period-nav, it waits for the period to be said.
+        if (this.options.period && !this.period) {
+          return;
+        }
+
+        await this.fetchData(source, true);
+        this.draw();
+      },
+    });
   }
 
   private onPeriodChange = (event: Event): void => {
@@ -204,6 +234,7 @@ export default class extends Component {
   };
 
   protected async deactivateListeners(): Promise<void> {
+    (this.app.services[PollingService.serviceName] as PollingService | undefined)?.stopOwner(this);
     this.resizeObserver?.disconnect();
     document.removeEventListener('period-change', this.onPeriodChange);
     this.app.services.events.forget(AssetsServiceEvents.USAGE_CHANGE, this.onUsageChange);
@@ -233,9 +264,14 @@ export default class extends Component {
   // the repository generated from ChartPoint, which knows its endpoint. A
   // failure is thrown, not drawn as an empty chart: a repository the api
   // client does not register, or an answer in error, must show.
-  private async fetchData(source: string): Promise<void> {
+  // `silent`: read again on a clock — the points already drawn stay, no
+  // spinner over them.
+  private async fetchData(source: string, silent: boolean = false): Promise<void> {
     this.loading = true;
-    this.chart?.showLoading('default', { text: '', color: this.theme().accent, maskColor: 'transparent' });
+
+    if (!silent) {
+      this.chart?.showLoading('default', { text: '', color: this.theme().accent, maskColor: 'transparent' });
+    }
 
     try {
       const repository = (this.app.getService('api') as any).client.getRepository('chartPoint');

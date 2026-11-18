@@ -61,6 +61,10 @@ class ChartExtension extends AbstractTemplateExtension
                             'period' => (bool) ($options['period'] ?? false),
                             // With `source`: what the chart is about, by its id, for the provider.
                             'scope' => isset($options['scope']) ? (string) $options['scope'] : null,
+                            // With `source`: its points read again every so many
+                            // seconds (the loader's PollingService) — a chart of
+                            // what goes on now. Chosen here, never guessed.
+                            'poll' => isset($options['poll']) ? (int) $options['poll'] : null,
                             // { style: decimal|percent|currency|unit, currency, unit, decimals }
                             'format' => $options['format'] ?? null,
                             'stacked' => (bool) ($options['stacked'] ?? false),

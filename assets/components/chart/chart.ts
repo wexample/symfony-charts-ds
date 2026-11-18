@@ -2,6 +2,7 @@ import Component from '@wexample/symfony-loader/js/Class/Component';
 import LazyActivationMixin from '@wexample/symfony-loader/js/Class/Mixins/LazyActivationMixin';
 import { AssetsServiceEvents } from '@wexample/symfony-loader/js/Services/AssetsService';
 import PollingService from '@wexample/symfony-loader/js/Services/PollingService';
+import { periodFollow, type PeriodBounds } from '@wexample/symfony-design-system/js/Helper/PeriodHelper';
 import * as echarts from 'echarts/core';
 import { BarChart, BoxplotChart, LineChart, MapChart, PieChart, ScatterChart } from 'echarts/charts';
 import {
@@ -44,9 +45,6 @@ function worldMapLoad(): Promise<void> {
   return worldMapLoading;
 }
 
-// The period a period-nav announces (`period-change`, with ISO bounds), to
-// which a chart reading its points from the api restricts them.
-type ChartPeriod = { from: string; to: string };
 
 type ChartSeries = {
   name: string;
@@ -140,7 +138,9 @@ export default class extends Component {
   private loading = false;
   // Paper is white whatever the scheme on screen: drawn in ink while printing.
   private printing = false;
-  private period: ChartPeriod | null = null;
+  // The period-nav's period its points are restricted to (`period`).
+  private period: PeriodBounds | null = null;
+  private forgetPeriod?: () => void;
 
   // A chart is a library to start: it waits to be seen (`lazy: false` on a
   // call to draw it at once, at the top of a page).
@@ -187,9 +187,11 @@ export default class extends Component {
 
     if (this.options.source && this.options.period) {
       // The period-nav announced its period before this chart listened, or
-      // will: it is asked to say it again, and every change after is heard.
-      document.addEventListener('period-change', this.onPeriodChange);
-      document.dispatchEvent(new CustomEvent('period-request'));
+      // will: followed either way, read again at each change.
+      this.forgetPeriod = periodFollow((period) => {
+        this.period = period;
+        void this.fetchData(this.options.source!).then(() => this.draw());
+      });
       this.startPolling();
 
       return;
@@ -230,22 +232,11 @@ export default class extends Component {
     });
   }
 
-  private onPeriodChange = (event: Event): void => {
-    const { from, to } = (event as CustomEvent<ChartPeriod>).detail;
-
-    if (this.period?.from === from && this.period?.to === to) {
-      return;
-    }
-
-    this.period = { from, to };
-    void this.fetchData(this.options.source!).then(() => this.draw());
-  };
-
   protected async deactivateListeners(): Promise<void> {
     (this.app.services[PollingService.serviceName] as PollingService | undefined)?.stopOwner(this);
     this.resizeObserver?.disconnect();
     cancelAnimationFrame(this.resizeFrame);
-    document.removeEventListener('period-change', this.onPeriodChange);
+    this.forgetPeriod?.();
     this.app.services.events.forget(AssetsServiceEvents.USAGE_CHANGE, this.onUsageChange);
     window.removeEventListener('beforeprint', this.onPrint);
     window.removeEventListener('afterprint', this.onPrintEnd);

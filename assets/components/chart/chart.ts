@@ -230,7 +230,9 @@ export default class extends Component {
   };
 
   // The points of the chart, read as any list of entities is read: through
-  // the repository generated from ChartPoint, which knows its endpoint.
+  // the repository generated from ChartPoint, which knows its endpoint. A
+  // failure is thrown, not drawn as an empty chart: a repository the api
+  // client does not register, or an answer in error, must show.
   private async fetchData(source: string): Promise<void> {
     this.loading = true;
     this.chart?.showLoading('default', { text: '', color: this.theme().accent, maskColor: 'transparent' });
@@ -243,12 +245,10 @@ export default class extends Component {
         query: { chart: source, ...(this.options.scope ? { scope: this.options.scope } : {}), ...(this.period ?? {}) },
       });
       this.data = this.pivot(points);
-    } catch {
-      this.data = {};
+    } finally {
+      this.loading = false;
+      this.chart?.hideLoading();
     }
-
-    this.loading = false;
-    this.chart?.hideLoading();
   }
 
   // Points to the shape the types draw from: the categories in the order of

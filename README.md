@@ -1,6 +1,6 @@
 # symfony-charts-ds
 
-Version: 6.0.2
+Version: 6.0.3
 
 Design-system side of symfony-charts: ECharts components and sparklines
 

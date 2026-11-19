@@ -1,7 +1,15 @@
 {#- A chart, drawn by chart.ts with ECharts from the type and the data it is
     given as options. The words the charts write themselves — a legend, a
     tooltip — are handed over translated in data-words; the labels of the data
-    come translated with it. -#}
+    come translated with it. Given a `title`, drawn in a card so titled —
+    a chart among others, on a page of stats. -#}
+{%- if title|default(null) -%}
+<section class="block block--card chart--card">
+    <div class="block--title">
+        <h3 class="block--title-label">{{ title }}</h3>
+    </div>
+    <div class="block--body">
+{%- endif -%}
 <div class="chart chart--{{ type }}{% if class|default(null) %} {{ class }}{% endif %}"
      {%- if height|default(null) %} style="--chart-height: {{ height }}"{% endif %}>
     <div class="chart--canvas"
@@ -28,3 +36,7 @@
         <span class="chart--empty-text">{{ '@component::empty' | trans }}</span>
     </div>
 </div>
+{%- if title|default(null) -%}
+    </div>
+</section>
+{%- endif -%}

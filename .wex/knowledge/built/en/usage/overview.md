@@ -40,6 +40,7 @@ Options:
 - `legend`: shown when there is more than one series unless said.
 - `thresholds`: `{ warning: 0.85, overload: 1.0 }` by default, the load ratios from which a capacity bar warns, then overloads.
 - `height` (`--chart-height`, 18rem by default), `label` (the accessible name), `class`.
+- `title`: the chart drawn in its card (`block block--card`), titled so — a chart among others on a page of stats; its accessible name too, unless `label` says another.
 - `lazy`: true by default — the chart is initialised when it comes into view (`LazyActivationMixin` of `symfony-loader`). False for a chart at the top of a page.
 
 The labels inside `data` come translated by the caller; the words the component writes itself — Actual, Forecast, Today, Capacity, the quartiles — are in `chart.trans.yml`.

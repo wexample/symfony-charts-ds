@@ -46,7 +46,12 @@ class ChartExtension extends AbstractTemplateExtension
                         [
                             'type' => $type->value,
                             'height' => $options['height'] ?? null,
-                            'label' => $options['label'] ?? null,
+                            // The card it stands in, titled so — a chart among
+                            // others on a page of stats —; none without it. Its
+                            // words for whoever cannot see it, when `label` says
+                            // none.
+                            'title' => $options['title'] ?? null,
+                            'label' => $options['label'] ?? $options['title'] ?? null,
                             'class' => $options['class'] ?? null,
                         ],
                         [

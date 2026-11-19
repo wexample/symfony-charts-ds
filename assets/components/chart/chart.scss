@@ -1,3 +1,4 @@
+@use '@wexample/symfony-design-system/css/shapes/block';
 // The chart takes the width it is given and a height of its own, which a page
 // sets through --chart-height. Everything inside the canvas is ECharts' svg,
 // coloured from the roles of the system by chart.ts.

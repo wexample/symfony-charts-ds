@@ -773,7 +773,9 @@ export default class extends Component {
   private valueAxis(theme: ChartTheme): object {
     return {
       type: 'value',
-      axisLabel: { color: theme.text, formatter: this.formatter(true) },
+      // Laid along a narrow chart — a horizontal bar in a card of four —,
+      // its figures leave out those that would run into each other.
+      axisLabel: { color: theme.text, formatter: this.formatter(true), hideOverlap: true },
       splitLine: { lineStyle: { color: theme.line } },
     };
   }

@@ -4,7 +4,7 @@ import { AssetsServiceEvents } from '@wexample/symfony-loader/js/Services/Assets
 import PollingService from '@wexample/symfony-loader/js/Services/PollingService';
 import { periodFollow, type PeriodBounds } from '@wexample/symfony-design-system/js/Helper/PeriodHelper';
 import * as echarts from 'echarts/core';
-import { BarChart, BoxplotChart, LineChart, MapChart, PieChart, ScatterChart } from 'echarts/charts';
+import { BarChart, BoxplotChart, HeatmapChart, LineChart, MapChart, PieChart, ScatterChart } from 'echarts/charts';
 import {
   GridComponent,
   LegendComponent,
@@ -20,6 +20,7 @@ import type { ECharts, EChartsCoreOption } from 'echarts/core';
 echarts.use([
   BarChart,
   BoxplotChart,
+  HeatmapChart,
   LineChart,
   MapChart,
   PieChart,
@@ -68,6 +69,10 @@ type ChartData = {
   // histogram
   samples?: number[];
   bins?: number;
+  // heatmap: the columns, the rows, a cell each [column, row, value]
+  x?: string[];
+  y?: string[];
+  values?: [number, number, number | null][];
 };
 
 type ChartFormat = {
@@ -79,7 +84,7 @@ type ChartFormat = {
 
 type ChartOptions = {
   lazy: boolean;
-  type: 'line' | 'area' | 'bar' | 'donut' | 'capacity' | 'forecast' | 'boxplot' | 'histogram' | 'map';
+  type: 'line' | 'area' | 'bar' | 'donut' | 'capacity' | 'forecast' | 'boxplot' | 'histogram' | 'map' | 'heatmap';
   data: ChartData;
   // The name of a chart served as ChartPoint entities (symfony-charts).
   source: string | null;
@@ -97,6 +102,11 @@ type ChartOptions = {
   smooth: boolean;
   legend: boolean | null;
   thresholds: { warning: number; overload: number };
+  // heatmap: the bounds of its scale — the values' own when null —, and
+  // whether it runs one way (`sequential`) or both ways from its middle.
+  min: number | null;
+  max: number | null;
+  scale: 'sequential' | 'diverging';
 };
 
 type ChartWords = Record<
@@ -116,6 +126,7 @@ type ChartTheme = {
   accent: string;
   warning: string;
   error: string;
+  success: string;
   series: string[];
 };
 
@@ -125,6 +136,9 @@ const SERIES_CATEGORIES = ['blue-jeans', 'mint', 'plum', 'sunflower', 'grapefrui
 // Below this distance from the accent, a category is left out of the series.
 const ACCENT_DISTANCE = 90;
 const HISTOGRAM_BINS = 10;
+// Up to this many cells, a heatmap writes each value in its cell; past it,
+// under the pointer only.
+const HEATMAP_LABELLED_CELLS = 64;
 
 export default class extends Component {
   // Given by chart() (ChartExtension), merged in by the loader.
@@ -160,6 +174,17 @@ export default class extends Component {
 
     this.words = JSON.parse(canvas.dataset.words || '{}');
     this.chart = echarts.init(canvas, null, { renderer: 'svg' });
+    // A heatmap's cell pressed: told on the chart's element, what it stands
+    // for with it — a page opening what the cell counts.
+    this.chart.on('click', (params: any) => {
+      if (this.options.type === 'heatmap' && Array.isArray(params.data?.value ?? params.value)) {
+        const [column, row, value] = (params.data?.value ?? params.value) as [number, number, number | null];
+        this.el.dispatchEvent(new CustomEvent('chart-cell', {
+          bubbles: true,
+          detail: { x: this.data.x?.[column] ?? null, y: this.data.y?.[row] ?? null, value: value ?? null },
+        }));
+      }
+    });
 
     // Resized on the next frame rather than in the observer's callback: the
     // svg redrawn there changes the layout being observed, which the browser
@@ -354,6 +379,8 @@ export default class extends Component {
         return this.histogram(theme);
       case 'map':
         return this.map(theme);
+      case 'heatmap':
+        return this.heatmap(theme);
       default:
         return this.cartesian(theme);
     }
@@ -716,6 +743,81 @@ export default class extends Component {
     };
   }
 
+  // Two variables crossed — a column each value of one, a row each value of
+  // the other —, each cell coloured by its value on a scale of the system's
+  // colours: the accent, fainter for the least (`sequential`), or the
+  // error's to the success's through the ground's line (`diverging`). A
+  // cell without a value is the ground's line, said so under the pointer.
+  // Its value written in it while the grid is small; its scale under it.
+  private heatmap(theme: ChartTheme): EChartsCoreOption | null {
+    const columns = this.data.x ?? [];
+    const rows = this.data.y ?? [];
+    const cells = (this.data.values ?? []).filter((cell) => Array.isArray(cell) && cell.length >= 3);
+
+    if (!columns.length || !rows.length) {
+      return null;
+    }
+
+    const full = this.formatter(false);
+    const known = cells.filter((cell) => cell[2] !== null && Number.isFinite(cell[2])) as [number, number, number][];
+    const empty = cells.filter((cell) => !(cell[2] !== null && Number.isFinite(cell[2])));
+    const values = known.map((cell) => cell[2]);
+    const min = this.options.min ?? (values.length ? Math.min(...values) : 0);
+    const max = this.options.max ?? (values.length ? Math.max(...values) : 1);
+    const labelled = columns.length * rows.length <= HEATMAP_LABELLED_CELLS;
+    const colors = this.options.scale === 'diverging'
+      ? [theme.error, theme.axis, theme.success]
+      : [echarts.color.modifyAlpha(theme.accent, 0.15), theme.accent];
+    const name = (cell: [number, number, unknown]) => `${columns[cell[0]] ?? ''} · ${rows[cell[1]] ?? ''}`;
+
+    return {
+      ...this.base(theme, false),
+      grid: { left: 8, right: 16, top: 16, bottom: 56, outerBoundsMode: 'same', outerBoundsContain: 'axisLabel' },
+      tooltip: {
+        ...this.tooltip(theme),
+        trigger: 'item',
+        formatter: (params: any) => `${name(params.value)}<br><strong>${params.seriesIndex === 1 ? '—' : full(params.value[2])}</strong>`,
+      },
+      xAxis: { ...this.categoryAxis(theme, columns), splitArea: { show: false } },
+      yAxis: { ...this.categoryAxis(theme, rows), splitArea: { show: false } },
+      visualMap: [{
+        type: 'continuous',
+        seriesIndex: 0,
+        min,
+        max: max === min ? min + 1 : max,
+        calculable: false,
+        orient: 'horizontal',
+        left: 'center',
+        bottom: 0,
+        itemHeight: 160,
+        itemWidth: 10,
+        text: [full(max), full(min)],
+        textStyle: { color: theme.text },
+        inRange: { color: colors },
+      }, {
+        // The cells without a value, one colour: the ground's line.
+        type: 'piecewise',
+        seriesIndex: 1,
+        show: false,
+        pieces: [{ value: 0, color: theme.line }],
+      }],
+      series: [{
+        type: 'heatmap',
+        data: known,
+        label: { show: labelled, color: theme.strong, formatter: (params: any) => full(params.value[2]) },
+        itemStyle: { borderColor: theme.surface, borderWidth: 2, borderRadius: 2 },
+        emphasis: { itemStyle: { borderColor: theme.strong } },
+        cursor: 'pointer',
+      }, {
+        type: 'heatmap',
+        data: empty.map((cell) => [cell[0], cell[1], 0]),
+        itemStyle: { borderColor: theme.surface, borderWidth: 2, borderRadius: 2 },
+        label: { show: false },
+        silent: false,
+      }],
+    };
+  }
+
   private base(theme: ChartTheme, legend: boolean): EChartsCoreOption {
     const show = this.options.legend ?? legend;
 
@@ -821,6 +923,7 @@ export default class extends Component {
       accent,
       warning: read('--warning-9', '#f59e0b'),
       error: read('--error-9', '#ef4444'),
+      success: read('--success-9', '#22c55e'),
       // A category too close to the accent would read as the first series twice.
       series: [accent, ...SERIES_CATEGORIES
         .map((name) => read(`--cat-${name}-9`, ''))

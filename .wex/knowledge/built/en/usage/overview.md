@@ -29,6 +29,7 @@ The type decides the shape of `data` (`Enum/ChartType`):
 | `forecast` | `{ categories, actual, forecast, low?, high?, today? }`: the actual line, the forecast dashed inside its band, today a line across |
 | `boxplot` | `{ categories, series: [{ name, values: [[samples], …] }] }`: the quartiles are computed from the raw samples |
 | `histogram` | `{ samples, bins? }`, ten bins of equal width by default |
+| `heatmap` | `{ x: [columns], y: [rows], values: [[x, y, value \| null], …] }`, two variables crossed, each cell coloured by its value on the system's colours — the accent, fainter for the least (`scale: 'sequential'`), or the error's to the success's (`'diverging'`), between `min` and `max` (the values' own by default); a cell without a value greyed; its value written in it up to 64 cells, under the pointer past them. A cell pressed is told on the chart's element: `chart-cell`, `{ x, y, value }` |
 
 Options:
 

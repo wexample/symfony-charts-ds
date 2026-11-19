@@ -13,6 +13,12 @@ namespace Wexample\SymfonyChartsDs\Enum;
  * - histogram: { samples, bins? }
  * - map: { categories: ISO 3166 alpha-2 codes, series: [{ name, values }] },
  *   countries coloured by the first series
+ * - heatmap: { x: [column labels], y: [row labels], values: [[x_index,
+ *   y_index, value | null], ...] }, two variables crossed, each cell coloured
+ *   by its value — null, no value, the cell greyed —; options `min`, `max`
+ *   (the scale's bounds, the values' own by default) and `scale`
+ *   (`sequential`, `diverging`). A cell pressed is told on the chart's
+ *   element as `chart-cell`, `{ x, y, value }`.
  */
 enum ChartType: string
 {
@@ -25,4 +31,5 @@ enum ChartType: string
     case BOXPLOT = 'boxplot';
     case HISTOGRAM = 'histogram';
     case MAP = 'map';
+    case HEATMAP = 'heatmap';
 }

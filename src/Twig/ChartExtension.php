@@ -79,6 +79,12 @@ class ChartExtension extends AbstractTemplateExtension
                             'legend' => $options['legend'] ?? null,
                             // capacity: the load ratios from which a bar warns, then overloads.
                             'thresholds' => ($options['thresholds'] ?? []) + ['warning' => 0.85, 'overload' => 1.0],
+                            // heatmap: the bounds of its scale — the values' own when
+                            // null —, and whether it runs one way or both ways from its
+                            // middle (`sequential`, `diverging`).
+                            'min' => isset($options['min']) ? (float) $options['min'] : null,
+                            'max' => isset($options['max']) ? (float) $options['max'] : null,
+                            'scale' => $options['scale'] ?? 'sequential',
                         ]
                     );
                 },

@@ -96,6 +96,9 @@ type ChartOptions = {
   scope: string | null;
   // With `source`: seconds between two readings of its points, or null.
   poll: number | null;
+  // With `source`: the events of the page after which its points are read
+  // again — a run over, a form saved.
+  refresh: string[];
   format: ChartFormat | null;
   stacked: boolean;
   horizontal: boolean;
@@ -107,6 +110,9 @@ type ChartOptions = {
   min: number | null;
   max: number | null;
   scale: 'sequential' | 'diverging';
+  // diverging: the value it diverges from — 0 between a loss and a gain —,
+  // its bounds then as far on each side; the middle of its bounds when null.
+  center: number | null;
 };
 
 type ChartWords = Record<
@@ -199,6 +205,7 @@ export default class extends Component {
     window.addEventListener('afterprint', this.onPrintEnd);
     // A colour scheme, a palette or a skin switched: drawn again in its colours.
     this.app.services.events.listen(AssetsServiceEvents.USAGE_CHANGE, this.onUsageChange);
+    this.refreshEvents().forEach((event) => this.app.services.events.listen(event, this.onRefresh));
 
     // Not awaited: a slow answer would hold the activation of the component
     // and, through it, whatever the page activates after.
@@ -263,6 +270,7 @@ export default class extends Component {
     cancelAnimationFrame(this.resizeFrame);
     this.forgetPeriod?.();
     this.app.services.events.forget(AssetsServiceEvents.USAGE_CHANGE, this.onUsageChange);
+    this.refreshEvents().forEach((event) => this.app.services.events.forget(event, this.onRefresh));
     window.removeEventListener('beforeprint', this.onPrint);
     window.removeEventListener('afterprint', this.onPrintEnd);
     this.chart?.dispose();
@@ -273,6 +281,20 @@ export default class extends Component {
 
   private onUsageChange = (): void => {
     this.draw();
+  };
+
+  // The events after which its points are read again (`refresh`): only a
+  // chart served by a source has anything to read again.
+  private refreshEvents(): string[] {
+    return this.options.source ? (this.options.refresh ?? []) : [];
+  }
+
+  // Read again in place, as on a clock: what is drawn stays until the new
+  // points come.
+  private onRefresh = (): void => {
+    if (this.options.source) {
+      void this.fetchData(this.options.source, true).then(() => this.draw());
+    }
   };
 
   private onPrint = (): void => {
@@ -340,6 +362,16 @@ export default class extends Component {
     series.forEach((item, key) => {
       data[key] = item.values;
     });
+
+    // A heatmap crosses the two: the categories its columns, a row per
+    // series, a cell per point.
+    if (this.options.type === 'heatmap') {
+      const rows = [...series.values()];
+      data.x = categories;
+      data.y = rows.map((row) => row.name);
+      data.values = rows.flatMap((row, rowIndex) => (row.values as (number | null)[])
+        .map((value, column) => [column, rowIndex, value] as [number, number, number | null]));
+    }
 
     return data;
   }
@@ -762,8 +794,17 @@ export default class extends Component {
     const known = cells.filter((cell) => cell[2] !== null && Number.isFinite(cell[2])) as [number, number, number][];
     const empty = cells.filter((cell) => !(cell[2] !== null && Number.isFinite(cell[2])));
     const values = known.map((cell) => cell[2]);
-    const min = this.options.min ?? (values.length ? Math.min(...values) : 0);
-    const max = this.options.max ?? (values.length ? Math.max(...values) : 1);
+    let min = this.options.min ?? (values.length ? Math.min(...values) : 0);
+    let max = this.options.max ?? (values.length ? Math.max(...values) : 1);
+    const center = this.options.scale === 'diverging' ? this.options.center : null;
+
+    // Diverging from a value: as far on each side, so that it stays the
+    // middle colour whatever the values.
+    if (center !== null && center !== undefined) {
+      const reach = Math.max(Math.abs(max - center), Math.abs(min - center)) || 1;
+      min = this.options.min ?? center - reach;
+      max = this.options.max ?? center + reach;
+    }
     const labelled = columns.length * rows.length <= HEATMAP_LABELLED_CELLS;
     const colors = this.options.scale === 'diverging'
       ? [theme.error, theme.axis, theme.success]

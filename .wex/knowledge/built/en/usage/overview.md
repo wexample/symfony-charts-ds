@@ -29,13 +29,14 @@ The type decides the shape of `data` (`Enum/ChartType`):
 | `forecast` | `{ categories, actual, forecast, low?, high?, today? }`: the actual line, the forecast dashed inside its band, today a line across |
 | `boxplot` | `{ categories, series: [{ name, values: [[samples], …] }] }`: the quartiles are computed from the raw samples |
 | `histogram` | `{ samples, bins? }`, ten bins of equal width by default |
-| `heatmap` | `{ x: [columns], y: [rows], values: [[x, y, value \| null], …] }`, two variables crossed, each cell coloured by its value on the system's colours — the accent, fainter for the least (`scale: 'sequential'`), or the error's to the success's (`'diverging'`), between `min` and `max` (the values' own by default); a cell without a value greyed; its value written in it up to 64 cells, under the pointer past them. A cell pressed is told on the chart's element: `chart-cell`, `{ x, y, value }` |
+| `heatmap` | `{ x: [columns], y: [rows], values: [[x, y, value \| null], …] }`, two variables crossed, each cell coloured by its value on the system's colours — the accent, fainter for the least (`scale: 'sequential'`), or the error's to the success's (`'diverging'`), between `min` and `max` (the values' own by default; diverging from `center` — `0` between a loss and a gain —, as far on each side); a cell without a value greyed; its value written in it up to 64 cells, under the pointer past them. A cell pressed is told on the chart's element: `chart-cell`, `{ x, y, value }` |
 
 Options:
 
-- `source`: the name of a chart served as `ChartPoint` entities; read through the generated repository instead of `data`. The points are turned into the shape above: the categories by `position`, a series per key, and each series again under its own key — `load`, `actual` — for the types that read one by name.
+- `source`: the name of a chart served as `ChartPoint` entities; read through the generated repository instead of `data`. The points are turned into the shape above: the categories by `position`, a series per key, and each series again under its own key — `load`, `actual` — for the types that read one by name. A heatmap crosses the two: the categories are its columns, each series a row.
 - `scope`: with `source`, what the chart is about — a project, an account, by its id —, sent to the provider, which checks it.
 - `poll`: with `source`, its points read again every so many seconds — a chart of what goes on now — through the loader's `PollingService` (not while the page is hidden, at once when seen again, further apart while the source fails), without a spinner over the points already drawn. Chosen by the page, never a fallback of live updates.
+- `refresh`: with `source`, the events of the page after which its points are read again, in place — a run over, a form saved: `{ refresh: ['study:trials-changed'] }`.
 - `format`: `{ style: decimal|percent|currency|unit, currency, unit, decimals }`, `Intl.NumberFormat` in the page's language. Axes write compact numbers (`25 k €`), tooltips whole ones.
 - `stacked`, `horizontal` (bar), `smooth` (line, area).
 - `legend`: shown when there is more than one series unless said.

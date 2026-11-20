@@ -70,6 +70,9 @@ class ChartExtension extends AbstractTemplateExtension
                             // seconds (the loader's PollingService) — a chart of
                             // what goes on now. Chosen here, never guessed.
                             'poll' => isset($options['poll']) ? (int) $options['poll'] : null,
+                            // With `source`: the events of the page after which its
+                            // points are read again — a run over, a form saved.
+                            'refresh' => array_values((array) ($options['refresh'] ?? [])),
                             // { style: decimal|percent|currency|unit, currency, unit, decimals }
                             'format' => $options['format'] ?? null,
                             'stacked' => (bool) ($options['stacked'] ?? false),
@@ -85,6 +88,9 @@ class ChartExtension extends AbstractTemplateExtension
                             'min' => isset($options['min']) ? (float) $options['min'] : null,
                             'max' => isset($options['max']) ? (float) $options['max'] : null,
                             'scale' => $options['scale'] ?? 'sequential',
+                            // diverging: the value it diverges from, 0 between a loss
+                            // and a gain; the middle of its bounds when null.
+                            'center' => isset($options['center']) ? (float) $options['center'] : null,
                         ]
                     );
                 },

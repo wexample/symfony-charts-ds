@@ -14,9 +14,11 @@ use Wexample\SymfonyDesignSystem\Twig\AbstractTemplateExtension;
  *   a chart drawn by ECharts, data shaped as ChartType says. With `source`,
  *   the points of that chart are read from the api instead, as ChartPoint
  *   entities (symfony-charts).
- * - `chart_sparkline(values, { active: [from, to], width, height, label, fluid })`:
+ * - `chart_sparkline(values, { active: [from, to], width, height, label, fluid, trend })`:
  *   a small line drawn on the server, for a table row; `fluid`, as wide as
- *   what holds it — the foot of a key figure's card —, `height` its own.
+ *   what holds it — the foot of a key figure's card —, `height` its own;
+ *   `trend`, the line in the colour of the way it went — what a worth or a
+ *   price drawn over time asks, where its way is the news.
  */
 class ChartExtension extends AbstractTemplateExtension
 {
@@ -120,6 +122,7 @@ class ChartExtension extends AbstractTemplateExtension
                             'label' => $options['label'] ?? null,
                             'class' => $options['class'] ?? null,
                             'fluid' => (bool) ($options['fluid'] ?? false),
+                            'trend' => ($options['trend'] ?? false) ? SparklineHelper::trend($values) : null,
                             'geometry' => SparklineHelper::geometry($values, $width, $height, $options['active'] ?? null),
                         ]
                     );

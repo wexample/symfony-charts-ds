@@ -28,4 +28,12 @@ class SparklineHelperTest extends TestCase
         $this->assertSame('', SparklineHelper::geometry([null], 104, 24)['points']);
         $this->assertNull(SparklineHelper::geometry([], 104, 24)['last']);
     }
+
+    public function testTrend(): void
+    {
+        $this->assertSame('up', SparklineHelper::trend([10, 8, null, 12]));
+        $this->assertSame('down', SparklineHelper::trend([null, 10, 12, 9]));
+        $this->assertNull(SparklineHelper::trend([5, 7, 5]));
+        $this->assertNull(SparklineHelper::trend([5, null]));
+    }
 }

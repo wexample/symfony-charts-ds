@@ -78,4 +78,24 @@ class SparklineHelper
             'max' => $max,
         ];
     }
+
+    /**
+     * Which way a series went, its last value beside its first: `up`,
+     * `down`, or null for a series that ended where it began or holds fewer
+     * than two values.
+     *
+     * @param list<int|float|null> $values
+     */
+    public static function trend(array $values): ?string
+    {
+        $numbers = array_values(array_filter($values, static fn ($value) => null !== $value));
+        if (count($numbers) < 2) {
+            return null;
+        }
+
+        $first = (float) $numbers[0];
+        $last = (float) $numbers[count($numbers) - 1];
+
+        return $last > $first ? 'up' : ($last < $first ? 'down' : null);
+    }
 }

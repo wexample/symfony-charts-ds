@@ -51,6 +51,32 @@
   transform: translate(-50%, -50%);
 }
 
+// Its way, where the way is the news (`trend`): the line, and its last value,
+// in the design system's trend roles — the ones a table's change is read in.
+.chart-sparkline--trend-up {
+  --chart-sparkline-trend: var(--color-trend-up);
+}
+
+.chart-sparkline--trend-down {
+  --chart-sparkline-trend: var(--color-trend-down);
+}
+
+.chart-sparkline--trend-up,
+.chart-sparkline--trend-down {
+  .chart-sparkline--line,
+  &.chart-sparkline--fluid .chart-sparkline--line {
+    stroke: var(--chart-sparkline-trend);
+  }
+
+  .chart-sparkline--last {
+    fill: var(--chart-sparkline-trend);
+  }
+
+  .chart-sparkline--dot {
+    background: var(--chart-sparkline-trend);
+  }
+}
+
 // Paper is white whatever the scheme on screen: a light grey window.
 @media print {
   .chart-sparkline--active {

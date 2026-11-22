@@ -6,6 +6,8 @@
     Fluid (`fluid`), it is as wide as what holds it — the foot of a key
     figure's card —: the svg stretches its box to that width, its stroke kept
     as thin, and the last dot, laid over it in percent, stays round. -#}
+{#- Its way (`trend`): the line in the colour of a rise or a fall. -#}
+{%- set class = (class|default(null) ? class ~ ' ' : '') ~ (trend|default(null) ? 'chart-sparkline--trend-' ~ trend : '') -%}
 {%- set extent = geometry.min is not null ? geometry.min|number_format(0, '', ' ') ~ ' – ' ~ geometry.max|number_format(0, '', ' ') : '' -%}
 {%- set said = (label|default(null) ? label ~ ' : ' : '') ~ extent -%}
 {%- if fluid|default(false) -%}

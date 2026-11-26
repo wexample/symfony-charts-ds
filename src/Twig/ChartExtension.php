@@ -93,6 +93,9 @@ class ChartExtension extends AbstractTemplateExtension
                             // diverging: the value it diverges from, 0 between a loss
                             // and a gain; the middle of its bounds when null.
                             'center' => isset($options['center']) ? (float) $options['center'] : null,
+                            // scatter: what its two axes measure.
+                            'xLabel' => isset($options['xLabel']) ? (string) $options['xLabel'] : null,
+                            'yLabel' => isset($options['yLabel']) ? (string) $options['yLabel'] : null,
                         ]
                     );
                 },

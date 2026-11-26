@@ -19,6 +19,13 @@ namespace Wexample\SymfonyChartsDs\Enum;
  *   (the scale's bounds, the values' own by default) and `scale`
  *   (`sequential`, `diverging`). A cell pressed is told on the chart's
  *   element as `chart-cell`, `{ x, y, value }`.
+ * - scatter: { series: [{ name, color?, hollow?, points: [{ x, y, label,
+ *   size?, details?, href? }] }] }, two measures crossed, a point each thing
+ *   measured; options `xLabel`, `yLabel` (what the axes measure) and
+ *   `format`, which both axes share. A series is a kind of point, named in
+ *   the legend, coloured by a category or by a role of the system
+ *   (`success`, `warning`, `error`, `accent`, `muted`), drawn as rings when
+ *   `hollow`. A point pressed is told as `chart-point`, and opens its `href`.
  */
 enum ChartType: string
 {
@@ -32,4 +39,5 @@ enum ChartType: string
     case HISTOGRAM = 'histogram';
     case MAP = 'map';
     case HEATMAP = 'heatmap';
+    case SCATTER = 'scatter';
 }

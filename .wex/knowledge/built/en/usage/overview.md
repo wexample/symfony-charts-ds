@@ -30,6 +30,7 @@ The type decides the shape of `data` (`Enum/ChartType`):
 | `boxplot` | `{ categories, series: [{ name, values: [[samples], …] }] }`: the quartiles are computed from the raw samples |
 | `histogram` | `{ samples, bins? }`, ten bins of equal width by default |
 | `heatmap` | `{ x: [columns], y: [rows], values: [[x, y, value \| null], …] }`, two variables crossed, each cell coloured by its value on the system's colours — the accent, fainter for the least (`scale: 'sequential'`), or the error's to the success's (`'diverging'`), between `min` and `max` (the values' own by default; diverging from `center` — `0` between a loss and a gain —, as far on each side); a cell without a value greyed; its value written in it up to 64 cells, under the pointer past them. A cell pressed is told on the chart's element: `chart-cell`, `{ x, y, value }` |
+| `scatter` | `{ series: [{ name, color?, hollow?, points: [{ x, y, label, size?, details?, href? }] }] }`, two measures crossed, a point each thing measured: `x` across, `y` up, `label` and both figures under the pointer, then its `details`; `size` draws it larger by area; pressed, it is told as `chart-point` and opens its `href`. A series is a kind of point, named in the legend — coloured by a category, or by a role of the system for a state (`success`, `warning`, `error`, `accent`, `muted`), drawn as rings when `hollow`. `xLabel` and `yLabel` name the axes, which share `format`; a line marks `y = 0` |
 
 Options:
 
@@ -40,6 +41,7 @@ Options:
 - `format`: `{ style: decimal|percent|currency|unit, currency, unit, decimals }`, `Intl.NumberFormat` in the page's language. Axes write compact numbers (`25 k €`), tooltips whole ones.
 - `stacked`, `horizontal` (bar), `smooth` (line, area).
 - `legend`: shown when there is more than one series unless said.
+- `xLabel`, `yLabel` (scatter): what the axes measure, written along them and under the pointer.
 - `thresholds`: `{ warning: 0.85, overload: 1.0 }` by default, the load ratios from which a capacity bar warns, then overloads.
 - `height` (`--chart-height`, 18rem by default), `label` (the accessible name), `class`.
 - `title`: the chart drawn in its card (`block block--card`), titled so — a chart among others on a page of stats; its accessible name too, unless `label` says another.

@@ -47,11 +47,29 @@ function worldMapLoad(): Promise<void> {
 }
 
 
+// A point of a scatter: where it stands, what it is called under the pointer,
+// and — each optional — what sizes it against the others, the lines said
+// after its two figures, the page it opens when pressed.
+type ChartScatterPoint = {
+  x: number;
+  y: number;
+  label: string;
+  size?: number | null;
+  details?: string[];
+  href?: string | null;
+};
+
 type ChartSeries = {
   name: string;
   values: (number | null)[] | number[][];
-  // A category of the palette (mixins/categories): `mint`, `plum`…
+  // A category of the palette (mixins/categories): `mint`, `plum`… — or, for
+  // a series that stands for a state, a role of the system: `success`,
+  // `warning`, `error`, `accent`, `muted`.
   color?: string;
+  // scatter: its points, and whether they are drawn as rings — a series set
+  // apart from the others by more than its colour.
+  points?: ChartScatterPoint[];
+  hollow?: boolean;
 };
 
 type ChartData = {
@@ -84,7 +102,7 @@ type ChartFormat = {
 
 type ChartOptions = {
   lazy: boolean;
-  type: 'line' | 'area' | 'bar' | 'donut' | 'capacity' | 'forecast' | 'boxplot' | 'histogram' | 'map' | 'heatmap';
+  type: 'line' | 'area' | 'bar' | 'donut' | 'capacity' | 'forecast' | 'boxplot' | 'histogram' | 'map' | 'heatmap' | 'scatter';
   data: ChartData;
   // The name of a chart served as ChartPoint entities (symfony-charts).
   source: string | null;
@@ -113,6 +131,9 @@ type ChartOptions = {
   // diverging: the value it diverges from — 0 between a loss and a gain —,
   // its bounds then as far on each side; the middle of its bounds when null.
   center: number | null;
+  // scatter: what its two axes measure, written along them and under the pointer.
+  xLabel: string | null;
+  yLabel: string | null;
 };
 
 type ChartWords = Record<
@@ -145,6 +166,14 @@ const HISTOGRAM_BINS = 10;
 // Up to this many cells, a heatmap writes each value in its cell; past it,
 // under the pointer only.
 const HEATMAP_LABELLED_CELLS = 64;
+// A scatter's point, across: the same for all without sizes, between the two
+// with — never so small that the pointer cannot land on it.
+const SCATTER_SIZE = 12;
+const SCATTER_SIZE_MIN = 10;
+const SCATTER_SIZE_MAX = 28;
+// The roles of the system a series may be coloured by, for a series that
+// stands for a state rather than for one category among others.
+const SERIES_ROLES = ['success', 'warning', 'error', 'accent', 'muted'] as const;
 
 export default class extends Component {
   // Given by chart() (ChartExtension), merged in by the loader.
@@ -183,6 +212,19 @@ export default class extends Component {
     // A heatmap's cell pressed: told on the chart's element, what it stands
     // for with it — a page opening what the cell counts.
     this.chart.on('click', (params: any) => {
+      // A scatter's point pressed: told the same way, and its page opened
+      // when it has one.
+      if (this.options.type === 'scatter' && params.data?.point) {
+        const point = params.data.point as ChartScatterPoint;
+        this.el.dispatchEvent(new CustomEvent('chart-point', { bubbles: true, detail: { ...point, series: params.seriesName ?? null } }));
+
+        if (point.href) {
+          window.location.assign(point.href);
+        }
+
+        return;
+      }
+
       if (this.options.type === 'heatmap' && Array.isArray(params.data?.value ?? params.value)) {
         const [column, row, value] = (params.data?.value ?? params.value) as [number, number, number | null];
         this.el.dispatchEvent(new CustomEvent('chart-cell', {
@@ -413,6 +455,8 @@ export default class extends Component {
         return this.map(theme);
       case 'heatmap':
         return this.heatmap(theme);
+      case 'scatter':
+        return this.scatter(theme);
       default:
         return this.cartesian(theme);
     }
@@ -859,6 +903,95 @@ export default class extends Component {
     };
   }
 
+  // Two measures crossed, a point each thing measured: where it stands says
+  // both at once, and the cloud says what no list does — where most of them
+  // are, and what stands apart. A series is a kind of point, named in the
+  // legend; the pointer says which point and its figures, whole.
+  private scatter(theme: ChartTheme): EChartsCoreOption | null {
+    const series = (this.data.series ?? []).filter((item) => item.points?.length);
+
+    if (!series.length) {
+      return null;
+    }
+
+    const full = this.formatter(false);
+    const escape = echarts.format.encodeHTML;
+    const xLabel = this.options.xLabel ?? '';
+    const yLabel = this.options.yLabel ?? '';
+    const sizes = series
+      .flatMap((item) => item.points!.map((point) => point.size))
+      .filter((size): size is number => typeof size === 'number' && Number.isFinite(size) && size > 0);
+    const largest = sizes.length ? Math.max(...sizes) : 0;
+    // By area, as the eye reads a disc: the square root of its share of the largest.
+    const sizeOf = (size?: number | null): number => (largest > 0 && typeof size === 'number' && size > 0
+      ? SCATTER_SIZE_MIN + (SCATTER_SIZE_MAX - SCATTER_SIZE_MIN) * Math.sqrt(size / largest)
+      : (largest > 0 ? SCATTER_SIZE_MIN : SCATTER_SIZE));
+    const axisName = (name: string, gap: number) => ({
+      name,
+      nameLocation: 'middle',
+      nameGap: gap,
+      nameTextStyle: { color: theme.text },
+      // Its bounds are its points', not zero's: a cloud far from the origin is not squeezed into a corner.
+      scale: true,
+    });
+
+    return {
+      ...this.base(theme, series.length > 1),
+      // The legend's key is the mark's: a disc, a ring.
+      legend: { ...this.legend(theme), show: this.options.legend ?? series.length > 1, icon: 'circle', itemWidth: 10, itemHeight: 10 },
+      grid: { left: 24, right: 24, top: (this.options.legend ?? series.length > 1) ? 40 : 16, bottom: 28, outerBoundsMode: 'same', outerBoundsContain: 'axisLabel' },
+      tooltip: {
+        ...this.tooltip(theme),
+        trigger: 'item',
+        formatter: (params: any) => {
+          const point = params.data?.point as ChartScatterPoint | undefined;
+
+          if (!point) {
+            return '';
+          }
+
+          // Every word comes from the data: written as text, never as markup.
+          return [
+            `<strong>${escape(point.label)}</strong>`,
+            `${escape(yLabel)} : <strong>${full(point.y)}</strong>`,
+            `${escape(xLabel)} : <strong>${full(point.x)}</strong>`,
+            ...(point.details ?? []).map((line) => escape(line)),
+          ].join('<br>');
+        },
+      },
+      xAxis: { ...this.valueAxis(theme), ...axisName(xLabel, 30) },
+      yAxis: { ...this.valueAxis(theme), ...axisName(yLabel, 48) },
+      series: series.map((item, index) => {
+        const color = item.color ? this.seriesColor(item.color, theme) : theme.series[index % theme.series.length];
+
+        return {
+          name: item.name,
+          type: 'scatter',
+          symbol: 'circle',
+          data: item.points!.map((point) => ({ value: [point.x, point.y], point, symbolSize: sizeOf(point.size) })),
+          // A disc wears a ring of the ground's colour: two that overlap stay
+          // two. A hollow series is the other way round — the ground inside,
+          // its colour around.
+          itemStyle: item.hollow
+            ? { color: theme.surface, borderColor: color, borderWidth: 2 }
+            : { color, borderColor: theme.surface, borderWidth: 2, opacity: 0.9 },
+          emphasis: { scale: 1.4, itemStyle: { borderColor: theme.strong, opacity: 1 } },
+          cursor: item.points!.some((point) => point.href) ? 'pointer' : 'default',
+          // Where nothing was gained nor lost: a line across, once.
+          ...(index === 0 ? {
+            markLine: {
+              silent: true,
+              symbol: 'none',
+              label: { show: false },
+              lineStyle: { color: theme.axis, type: 'solid', width: 1 },
+              data: [{ yAxis: 0 }],
+            },
+          } : {}),
+        };
+      }),
+    };
+  }
+
   private base(theme: ChartTheme, legend: boolean): EChartsCoreOption {
     const show = this.options.legend ?? legend;
 
@@ -983,6 +1116,16 @@ export default class extends Component {
     const [r2, g2, b2] = channels(second);
 
     return Math.hypot(r1 - r2, g1 - g2, b1 - b2);
+  }
+
+  // A series' colour by its name: a role of the system — a state —, or a
+  // category of the palette.
+  private seriesColor(name: string, theme: ChartTheme): string {
+    if ((SERIES_ROLES as readonly string[]).includes(name)) {
+      return name === 'muted' ? theme.text : theme[name as 'success' | 'warning' | 'error' | 'accent'];
+    }
+
+    return this.categoryColor(name, theme);
   }
 
   private categoryColor(name: string, theme: ChartTheme): string {
